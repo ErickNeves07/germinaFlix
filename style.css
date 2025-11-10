@@ -146,7 +146,14 @@
     border: 4px solid #44423d;
     background-color: #ff9159;
   }
-  
+  label{
+    cursor:pointer;
+    transition: 0.2s ease !important;
+  }
+  label:hover{
+    transform: translateY(-10%);
+  }
+
   #todos + label{
     border-radius: 12px;
     font-size: 18px;
@@ -198,9 +205,16 @@
     list-style: none;
   }
   .nav-item a{
+    transition: 0.2s ease;
     text-decoration: none;
     font-weight: 600;
     color: #1d1d1dad;
+  }
+  .nav-item{
+    transition: 0.2s ease;
+  }
+  .nav-item:hover{
+    transform: translateY(-10%);
   }
   .nav-item.active a{
     color: #1d1d1d;
@@ -316,4 +330,9 @@
 }
 .social-media-buttons a:hover{
     box-shadow: 0px 0px 12px 8px rgba(0,0,0,0.1);
+}
+img, a{
+  user-select: none;
+  -webkit-user-drag: none;
+  
 }
