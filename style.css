@@ -103,7 +103,7 @@
     font-weight: bold;
     padding: 10px;
     border: 4px solid #ff9159;
-    transition: background-color 1s ease-in-out, border 1s ease;
+    transition: background-color 1s ease-in-out, border 1s ease !important;
   }
   
   #aventura:checked + label{
@@ -119,7 +119,7 @@
     font-weight: bold;
     padding: 10px;
     border: 4px solid #ff9159;
-    transition: background-color 1s ease-in-out, border 1s ease;
+    transition: background-color 1s ease-in-out, border 1s ease !important;
   }
   
   #comedia:checked + label{
@@ -135,7 +135,7 @@
     font-weight: bold;
     padding: 10px;
     border: 4px solid #ff9159;
-    transition: background-color 1s ease-in-out, border 1s ease;
+    transition: background-color 1s ease-in-out, border 1s ease !important;
   }
   
   #todos:checked + label{
@@ -148,10 +148,10 @@
   }
   label{
     cursor:pointer;
-    transition: 0.2s ease !important;
+
   }
   label:hover{
-    transform: translateY(-10%);
+    transform: translateY(-10%) !important;
   }
 
   #todos + label{
@@ -160,7 +160,7 @@
     font-weight: bold;
     padding: 10px;
     border: 4px solid #ff9159;
-    transition: background-color 1s ease-in-out, border 1s ease, margin-right 2s ease;
+    transition: background-color 1s ease-in-out, border 1s ease, margin-right 2s ease !important;
   }
   
   
