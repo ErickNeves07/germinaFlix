@@ -1,3 +1,5 @@
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -15,6 +17,73 @@ class SiteValidationTests(unittest.TestCase):
         target = root / path
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(content, encoding="utf-8")
+
+    def write_catalog(self, mufasa_destination="filmes/filme2.html", pending_link=""):
+        self.write(
+            self.site,
+            "filmes/filme1.html",
+            "<title>Homem-Aranha: Através do Aranhaverso</title>",
+        )
+        self.write(self.site, "filmes/filme2.html", "<title>Mufasa: O Rei Leão (2024)</title>")
+        active = (
+            '<div class="filme" id="filme1"><a href="filmes/filme1.html">'
+            "<h2>Homem-Aranha: Através do Aranhaverso (2023)</h2></a></div>"
+            f'<div class="filme" id="filme2"><a href="{mufasa_destination}">'
+            "<h2>Mufasa:  O Rei Leão (2024) <span>Mais vistos</span></h2></a></div>"
+        )
+        pending = "".join(
+            f'<div class="filme" id="filme{number}"><div class="card">'
+            f'<span class="status-filme">Em breve</span>{pending_link if number == 3 else ""}'
+            "</div></div>"
+            for number in range(3, 11)
+        )
+        self.write(self.site, "index.html", active + pending)
+
+    def run_site_validator(self):
+        script = Path(__file__).resolve().parents[1] / "scripts" / "validate_site.py"
+        return subprocess.run(
+            [sys.executable, "-X", "utf8", str(script), "--source", str(self.site)],
+            capture_output=True,
+            encoding="utf-8",
+            check=False,
+        )
+
+    def test_rejects_existing_destination_for_wrong_film(self):
+        self.write_catalog(mufasa_destination="filmes/filme1.html")
+
+        result = self.run_site_validator()
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("index.html", result.stderr)
+        self.assertIn("filmes/filme1.html", result.stderr)
+        self.assertIn("Mufasa: O Rei Leão", result.stderr)
+        self.assertIn("Homem-Aranha: Através do Aranhaverso", result.stderr)
+
+    def test_accepts_titles_with_year_badge_and_extra_spaces(self):
+        self.write_catalog()
+
+        result = self.run_site_validator()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_rejects_incorrect_title_at_expected_destination(self):
+        self.write_catalog()
+        self.write(self.site, "filmes/filme2.html", "<title>Outro filme</title>")
+
+        result = self.run_site_validator()
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("Mufasa: O Rei Leão", result.stderr)
+        self.assertIn("Outro filme", result.stderr)
+
+    def test_rejects_pending_card_with_link(self):
+        self.write_catalog(pending_link='<a href="filmes/filme1.html">Filme</a>')
+
+        result = self.run_site_validator()
+
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("filme3", result.stderr)
+        self.assertIn("Em breve", result.stderr)
 
     def test_prepares_only_published_files(self):
         paths = {
