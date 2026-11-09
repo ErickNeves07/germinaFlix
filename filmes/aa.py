@@ -1,0 +1,1 @@
+print("\nIMC: ", int(input("PESO: "))/int(input("ALTURA: "))**2)
